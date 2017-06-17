@@ -1,0 +1,72 @@
+---
+################################################################################################
+# Create Instances in GCE                                                                      #
+#                                                                                              #
+# By Robert J. Calva - Red Hat LATAM - 2017                                                    #
+#                                                                                              #
+# Variable examples:                                                                           #
+#                                                                                              #
+#     zone: us-central1-a                                                                      #
+#     instance_names: my-webtest-instance1,my-webtest-instance2,my-webtest-instance3                    #
+#     machine_type: g1-small                                                                   #
+#     image: centos-7-v20170523                                                                #
+#     dns_zone: workshop.example.com                                                           #
+#                                                                                              #
+#                                                                                              #
+# Enjoy!                                                                                       #
+################################################################################################
+- name: Create Instances in GCE
+  hosts: localhost
+  gather_facts: True
+  connection: local
+  
+  tasks:
+  - name: Create an Instance based on image "{{image}}"  
+    gce:
+      instance_names: "{{instance_names}}"
+      zone: "{{zone}}"
+      machine_type: "{{machine_type}}"
+      image: "{{image}}"
+      state: present
+      preemptible: true
+      disk_size: "{{disk_size}}"
+      tags: http-server,https-server
+    register: gce
+
+  - name: Save host data within a Group
+    add_host:
+      hostname: "{{ item.public_ip }}"
+      groupname: gce_instances_temp
+    with_items: "{{ gce.instance_data }}"
+    
+     - name: Wait for SSH to come up
+    wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=60
+    with_items: "{{ gce.instance_data }}"
+
+  - name: setting fact
+    set_fact: host={{ item.public_ip }}
+    with_items: "{{ gce.instance_data }}"
+
+  - name: Record "{{instance_names}}" within "{{dns_zone}}"
+    gcdns_record:
+      zone: "{{dns_zone}}" 
+      record: "{{instance_names}}.{{dns_zone}}"
+      type: A
+      overwrite: true
+      value: "{{ host }}"
+
+  - name: Configure Hosts post-creation
+    hosts: gce_instances_temp
+    gather_facts: True
+    become: yes
+    become_method: sudo
+    tasks:
+    - name: install Apache
+      yum:
+        name: httpd
+        state: latest
+    - name: start Apache Service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
