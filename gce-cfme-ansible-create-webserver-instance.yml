@@ -29,7 +29,7 @@
       image: "{{image}}"
       state: present
       preemptible: true
-      disk_size: "{{disk_size}}"
+#      disk_size: "{{disk_size}}"
       tags: http-server,https-server
     register: gce
 
