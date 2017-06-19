@@ -68,7 +68,7 @@
       name: httpd
       state: latest
   - name: start Apache Service
-      service:
+    service:
       name: httpd
       state: started
       enabled: yes
