@@ -55,19 +55,20 @@
       overwrite: true
       value: "{{ host }}"
 
-  - name: Configure Hosts post-creation
-    hosts: gce_instances_temp
-    gather_facts: True
-    remote_user: rcalvaga
-    become: yes
-    become_method: sudo
-    tasks:
-    - name: install Apache
-      yum:
-        name: httpd
-        state: latest
-    - name: start Apache Service
+- name: Configure Hosts post-creation
+  hosts: gce_instances_temp
+  gather_facts: True
+  remote_user: rcalvaga
+  become: yes
+  become_method: sudo
+  
+  tasks:
+  - name: install Apache
+    yum: 
+      name: httpd
+      state: latest
+  - name: start Apache Service
       service:
-        name: httpd
-        state: started
-        enabled: yes
+      name: httpd
+      state: started
+      enabled: yes
