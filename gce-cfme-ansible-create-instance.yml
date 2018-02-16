@@ -32,6 +32,11 @@
 #      disk_size: "{{disk_size}}"
       tags: http-server,https-server
     register: gce
+    
+  - set_stats:
+    data:
+      gce_public_ip: "{{ gce.instance_data.public_ip }}"
+    per_host: no
 
   - name: Save host data within a Group
     add_host:
