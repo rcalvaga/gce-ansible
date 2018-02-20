@@ -32,20 +32,8 @@
 #      disk_size: "{{disk_size}}"
       tags: http-server,https-server
     register: gce
-  
-  - name: setting fact
-    set_fact: host={{ item.public_ip }}
-    with_items: "{{ gce.instance_data }}"
 
-  - name: Record "{{ instance_name }}" within "{{ dns_zone }}"
-    gcdns_record:
-      zone: "{{ dns_zone }}" 
-      record: "{{ instance_name }}.{{ dns_zone }}"
-      type: A
-      overwrite: true
-      value: "{{ host }}"
-      
   - set_stats:
-    data:
-      gce_instance_data: "{{ host }}"
-    per_host: no
+      data:
+        gce_instance_data: "{{ gce.instance_data }}"
+      per_host: no
