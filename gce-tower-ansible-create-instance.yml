@@ -32,6 +32,10 @@
 #      disk_size: "{{disk_size}}"
       tags: http-server,https-server
     register: gce
+  
+  - name: setting fact
+    set_fact: host={{ item.public_ip }}
+    with_items: "{{ gce.instance_data }}"
 
   - name: Record "{{ instance_name }}" within "{{ dns_zone }}"
     gcdns_record:
