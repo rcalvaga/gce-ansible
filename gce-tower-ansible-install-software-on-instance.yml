@@ -1,0 +1,38 @@
+- name: Install Software on Instances in GCE
+  hosts: localhost
+  gather_facts: True
+  connection: local
+  
+  tasks:
+  - name: Save host data within a Group
+    add_host:
+      hostname: "{{ item.public_ip }}"
+      groupname: gce_instances_temp
+    with_items: "{{ gce_instance_data }}"
+    
+  - name: Wait for SSH to come up
+    wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=60
+    with_items: "{{ gce_instance_data }}"
+
+  - name: setting fact
+    set_fact: host={{ item.public_ip }}
+    with_items: "{{ gce_instance_data }}"
+
+
+- name: Configure Hosts post-creation
+  hosts: gce_instances_temp
+  gather_facts: True
+  remote_user: workshop
+  become: yes
+  become_method: sudo
+  
+  tasks:
+  - name: install Apache
+    yum: 
+      name: httpd
+      state: latest
+  - name: start Apache Service
+    service:
+      name: httpd
+      state: started
+      enabled: yes
