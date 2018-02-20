@@ -1,0 +1,22 @@
+---
+- name: Use shadow template
+  template: src=shadow dest=/etc
+
+- name: Install Firewalld
+  yum: name=firewalld state=present
+  
+- name: Enable and start the Firewald service
+  systemd: state=started name=firewalld enabled=yes
+  
+- name: Install the cockpit and cockpit-dashboard packages
+  yum: name={{ item }} state=present
+  with_items:
+    - cockpit
+    - cockpit-dashboard
+   
+- name: Allow external connections to port 9090 through the firewall
+  firewalld: immediate=yes port={{ cockpit_port }}/tcp state=enabled permanent=yes
+  when: ansible_distribution_major_version == "7"
+  
+- name: Enable and start the cockpit.socket service
+  systemd: state=started name=cockpit.socket enabled=yes
