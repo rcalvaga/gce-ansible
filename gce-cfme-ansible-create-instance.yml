@@ -21,41 +21,27 @@
   connection: local
   
   tasks:
-  - name: Create an Instance based on image "{{image}}"  
+  - name: Create an Instance based on image "{{ image }}"  
     gce:
-      instance_names: "{{instance_names}}"
-      zone: "{{zone}}"
-      machine_type: "{{machine_type}}"
-      image: "{{image}}"
+      instance_names: "{{ instance_name }}"
+      zone: "{{ zone }}"
+      machine_type: "{{ machine_type }}"
+      image: "{{ image }}"
       state: present
       preemptible: true
 #      disk_size: "{{disk_size}}"
       tags: http-server,https-server
     register: gce
-    
-  - set_stats:
-    data:
-      gce_public_ip: "{{ gce.instance_data.public_ip }}"
-    per_host: no
 
-  - name: Save host data within a Group
-    add_host:
-      hostname: "{{ item.public_ip }}"
-      groupname: gce_instances_temp
-    with_items: "{{ gce.instance_data }}"
-    
-  - name: Wait for SSH to come up
-    wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=60
-    with_items: "{{ gce.instance_data }}"
-
-  - name: setting fact
-    set_fact: host={{ item.public_ip }}
-    with_items: "{{ gce.instance_data }}"
-
-  - name: Record "{{instance_names}}" within "{{dns_zone}}"
+  - name: Record "{{ instance_name }}" within "{{ dns_zone }}"
     gcdns_record:
-      zone: "{{dns_zone}}" 
-      record: "{{instance_names}}.{{dns_zone}}"
+      zone: "{{ dns_zone }}" 
+      record: "{{ instance_name }}.{{ dns_zone }}"
       type: A
       overwrite: true
       value: "{{ host }}"
+      
+  - set_stats:
+    data:
+      gce_instance_data: "{{ gce.instance_data }}"
+    per_host: no
