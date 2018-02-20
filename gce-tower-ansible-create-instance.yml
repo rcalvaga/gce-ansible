@@ -47,5 +47,5 @@
       
   - set_stats:
     data:
-      gce_instance_data: "{{ gce.instance_data }}"
+      gce_instance_data: "{{ host }}"
     per_host: no
