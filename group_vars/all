@@ -1,0 +1,7 @@
+# Variables related to the standalone JBoss installation
+http_port: 8080
+https_port: 8443
+mgmt_port: 9990
+
+# Variables related to Cockpit
+cockpit_port: 9090
