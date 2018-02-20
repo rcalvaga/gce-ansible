@@ -7,7 +7,7 @@
 # Variable examples:                                                                           #
 #                                                                                              #
 #     zone: us-central1-a                                                                      #
-#     instance_name: my-webtest-instance1,my-webtest-instance2,my-webtest-instance3           #
+#     instance_names: my-webtest-instance1,my-webtest-instance2,my-webtest-instance3           #
 #     machine_type: g1-small                                                                   #
 #     image: centos-7-v20170523                                                                #
 #     dns_zone: workshop.example.com                                                           #
@@ -23,7 +23,7 @@
   tasks:
   - name: Create an Instance based on image "{{ image }}"  
     gce:
-      instance_name: "{{ instance_name }}"
+      instance_names: "{{ instance_name }}"
       zone: "{{ zone }}"
       machine_type: "{{ machine_type }}"
       image: "{{ image }}"
