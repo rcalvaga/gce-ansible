@@ -1,5 +1,7 @@
 - name: Install Software on Windows Instances in GCE
-  gather_facts: True
+  hosts: localhost
+  gather_facts: False
+  connection: local
   
   tasks:
   - name: Save host data within a Group
