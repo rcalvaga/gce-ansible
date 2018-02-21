@@ -30,7 +30,7 @@
       state: present
       preemptible: true
 #      disk_size: "{{disk_size}}"
-      tags: http-server,https-server
+      tags: http-server,https-server,cockpit-rule,jboss-rule
     register: gce
 
   - set_stats:
