@@ -21,9 +21,13 @@
 
 - name: Configure Hosts post-creation
   hosts: gce_instances_temp
-  gather_facts: false  
+  gather_facts: False  
   
   tasks:
+   - name: Change ssh-->rdp port to 3389
+     set_fact:
+      ansible_ssh_port: 3389
+    
    - name: Add a Windows Admin User
      win_user:
        name: ansible
