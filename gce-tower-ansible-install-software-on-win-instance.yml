@@ -1,41 +1,8 @@
 - name: Install Software on Windows Instances in GCE
-  hosts: localhost
-  gather_facts: False
-  connection: local
-  
-  tasks:
-  - name: Save host data within a Group
-    add_host:
-      hostname: "{{ item.public_ip }}"
-      groupname: gce_instances_temp
-    with_items: "{{ gce_instance_data }}"
-    
-  - name: Wait for RDP to come up
-    wait_for: host={{ item.public_ip }} port=3389 delay=10 timeout=60
-    with_items: "{{ gce_instance_data }}"
-
-  - name: setting fact
-    set_fact: host={{ item.public_ip }}
-    with_items: "{{ gce_instance_data }}"
-
-
-- name: Configure Hosts post-creation
-  hosts: gce_instances_temp
+  hosts: "{{ instance_name }}"
   gather_facts: False  
   
-  tasks:
-   - name: Change ssh-->rdp port to 3389
-     set_fact:
-      ansible_ssh_port: 3389
-      
-   - name: Set Ansible Connection to WinRM
-     set_fact:
-      ansible_connection: winrm
-   
-   - name: Ignoring WinRM Cer Validations
-     set_fact:
-      ansible_winrm_server_cert_validation: ignore
-    
+  tasks:  
    - name: Add a Windows Admin User
      win_user:
        name: ansible
