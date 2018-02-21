@@ -27,6 +27,14 @@
    - name: Change ssh-->rdp port to 3389
      set_fact:
       ansible_ssh_port: 3389
+      
+   - name: Set Ansible Connection to WinRM
+     set_fact:
+      ansible_connection: winrm
+   
+   - name: Ignoring WinRM Cer Validations
+     set_fact:
+      ansible_winrm_server_cert_validation: ignore
     
    - name: Add a Windows Admin User
      win_user:
