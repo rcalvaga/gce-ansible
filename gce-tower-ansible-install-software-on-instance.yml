@@ -26,13 +26,7 @@
   become: yes
   become_method: sudo
   
-  tasks:
-  - name: install Apache
-    yum: 
-      name: httpd
-      state: latest
-  - name: start Apache Service
-    service:
-      name: httpd
-      state: started
-      enabled: yes
+  roles:
+   - common
+   - jboss-standalone
+   - java-app
