@@ -2,48 +2,12 @@
   hosts: all
   gather_facts: False  
   
-  tasks:  
-   - name: Add a Windows Admin User
-     win_user:
-       name: ansible
-       password: "Redhat1!"
-       state: present
-       groups:
-           - Administrators
-     register: user
-     
-   - name: Install Telnet-Client Feature
+  tasks: 
+   - name: Install "{{ software }}" on Windows Instance
      win_feature:
-       name: "Telnet-Client"
-       state: present
-       restart: False
-       include_sub_features: True
-       include_management_tools: True
-     register: telnet
-     
-   - name: Install IIS Web-Server with management tools
-     win_feature:
-       name: "Web-Server"
+       name: "{{ software }}"
        state: present
        restart: True
        include_sub_features: False
        include_management_tools: True
-     register: iis
-     
-   - name: Run ipconfig Command
-     raw: ipconfig
-     register: ipconfig
-   - debug: var=ipconfig
-   
-   - name: Check Status of file win.ini
-     win_stat: path="C:/Windows/win.ini"
-     register: stat_file 
-   - debug: var=stat_file
-    
-   - name: check stat_file result
-     assert:
-          that:
-             - "stat_file.stat.exists"
-             - "not stat_file.stat.isdir"
-             - "stat_file.stat.size > 0"
-             - "stat_file.stat.md5"
+     register: software
