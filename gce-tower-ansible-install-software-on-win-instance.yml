@@ -1,0 +1,70 @@
+- name: Install Software on Windows Instances in GCE
+  hosts: localhost
+  gather_facts: True
+  connection: local
+  
+  tasks:
+  - name: Save host data within a Group
+    add_host:
+      hostname: "{{ item.public_ip }}"
+      groupname: gce_instances_temp
+    with_items: "{{ gce_instance_data }}"
+    
+  - name: Wait for RDP to come up
+    wait_for: host={{ item.public_ip }} port=3389 delay=10 timeout=60
+    with_items: "{{ gce_instance_data }}"
+
+  - name: setting fact
+    set_fact: host={{ item.public_ip }}
+    with_items: "{{ gce_instance_data }}"
+
+
+- name: Configure Hosts post-creation
+  hosts: gce_instances_temp
+  gather_facts: false  
+  
+  tasks:
+   - name: Add a Windows Admin User
+     win_user:
+       name: ansible
+       password: "Redhat1!"
+       state: present
+       groups:
+           - Administrators
+     register: user
+     
+   - name: Install Telnet-Client Feature
+     win_feature:
+       name: "Telnet-Client"
+       state: present
+       restart: False
+       include_sub_features: True
+       include_management_tools: True
+     register: telnet
+     
+   - name: Install IIS Web-Server with management tools
+     win_feature:
+       name: "Web-Server"
+       state: present
+       restart: True
+       include_sub_features: False
+       include_management_tools: True
+     register: iis
+     
+   - name: Run ipconfig Command
+     raw: ipconfig
+     register: ipconfig
+   - debug: var=ipconfig
+   
+   - name: Check Status of file win.ini
+     win_stat: path="C:/Windows/win.ini"
+     register: stat_file 
+   - debug: var=stat_file
+    
+   - name: check stat_file result
+     assert:
+          that:
+             - "stat_file.stat.exists"
+             - "not stat_file.stat.isdir"
+             - "stat_file.stat.size > 0"
+             - "stat_file.stat.md5"
