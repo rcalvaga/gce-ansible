@@ -1,5 +1,5 @@
 - name: Install Software on Windows Instances in GCE
-  hosts: "{{ instance_name }}"
+  hosts: "{{ gce_instance_data.name }}"
   gather_facts: False  
   
   tasks:  
