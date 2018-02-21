@@ -1,5 +1,5 @@
 - name: Install Software on Windows Instances in GCE
-  hosts: win-2012-test
+  hosts: 35.224.104.124
   gather_facts: False  
   
   tasks:  
