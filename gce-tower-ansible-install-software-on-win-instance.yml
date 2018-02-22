@@ -7,7 +7,7 @@
      win_feature:
        name: "{{ software }}"
        state: present
-       reboot: false
+       reboot: true
        include_sub_features: False
        include_management_tools: True
      register: software
