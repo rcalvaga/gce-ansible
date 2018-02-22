@@ -11,3 +11,7 @@
        include_sub_features: False
        include_management_tools: True
      register: software
+     
+  - name: reboot if installing "{{ software }}" feature requires it
+    win_reboot:
+    when: software.reboot_required
