@@ -13,4 +13,4 @@
      
    - name: reboot if installing "{{ software }}" feature requires it
      win_reboot:
-     when: software.reboot_required
+     when: software.reboot_required == true
