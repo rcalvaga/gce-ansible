@@ -6,7 +6,7 @@
    - name: Install "{{ software }}" on Windows Instance
      win_feature:
        name: "{{ software }}"
-       state: absent
+       state: present
        reboot: true
        include_sub_features: False
        include_management_tools: True
