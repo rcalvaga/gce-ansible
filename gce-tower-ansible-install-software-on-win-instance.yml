@@ -12,6 +12,6 @@
        include_management_tools: True
      register: software
      
-  - name: reboot if installing "{{ software }}" feature requires it
-    win_reboot:
-    when: software.reboot_required
+   - name: reboot if installing "{{ software }}" feature requires it
+     win_reboot:
+     when: software.reboot_required
