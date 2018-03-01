@@ -1,0 +1,22 @@
+- name: Install Software on GCE Linux Instances
+  hosts: all
+  gather_facts: True
+  remote_user: workshop
+  become: yes
+  become_method: sudo
+  
+  tasks:
+  - name: install "{{ software }}"
+    yum: 
+      name: "{{ software }}"
+      state: latest
+  - name: start "{{ software }}" Service
+    service:
+      name: "{{ software }}"
+      state: started
+      enabled: yes
+
+- gce_tag:
+    tags: http-server,https-server,cockpit-rule
+    zone: us-central1-a
+    state: present
