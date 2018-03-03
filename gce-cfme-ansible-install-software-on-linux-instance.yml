@@ -16,7 +16,7 @@
       state: started
       enabled: yes
 
-- gce_tag:
-    tags: http-server,https-server,cockpit-rule
-    zone: us-central1-a
-    state: present
+  - gce_tag:
+      tags: http-server,https-server,cockpit-rule
+      zone: us-central1-a
+      state: present
