@@ -17,6 +17,7 @@
       enabled: yes
 
   - gce_tag:
+      instance_pattern: gce-instance-w*
       tags: http-server,https-server,cockpit-rule
       zone: us-central1-a
       state: present
