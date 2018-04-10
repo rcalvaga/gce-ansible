@@ -22,7 +22,7 @@
 - name: Configure Hosts post-creation
   hosts: gce_instances_temp
   gather_facts: True
-  remote_user: workshop
+  #remote_user: workshop
   become: yes
   become_method: sudo
   
