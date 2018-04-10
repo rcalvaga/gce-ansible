@@ -10,7 +10,6 @@
 - name: Download JBoss from jboss.org
   get_url: url=http://download.jboss.org/jbossas/7.1/jboss-as-7.1.1.Final/jboss-as-7.1.1.Final.zip dest=/opt/jboss-as-7.1.1.Final.zip
   register: result
-  #until: result.status_code is not 200
   until: result | success
   retries: 5
   delay: 10
@@ -41,6 +40,9 @@
 
 - name: Copy the init script
   copy: src=jboss-as-standalone.sh dest=/etc/init.d/jboss mode=0755
+
+- name: Copy the jboss-modules.jar file
+  copy: src=jboss-modules-1.1.5.GA.jar dest=/usr/share/jboss-as/jboss-modules.jar mode=0644
 
 - name: Workaround for systemd bug
   shell: service jboss start && chkconfig jboss on
