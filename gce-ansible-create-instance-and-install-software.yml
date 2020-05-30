@@ -1,0 +1,112 @@
+---
+
+- name: Create Instances in GCE
+  hosts: localhost
+  gather_facts: False
+  connection: local
+
+  vars:
+     zone: us-central1-a
+     instance_names: ansible-workshop-instance
+     machine_type: g1-small
+#     image: centos-7-v20170523
+     image: rhel-7
+#     service_account_email: "cf-and-ansible-workshops@cf-and-ansible-workshops.iam.gserviceaccount.com"
+#     credentials_file: "/home/rcalvaga/Red_Hat_Job/SMEs/GoogleCE/CF-And-Ansible-Workshops-0d270c5e0b1a.json"
+#     project_id: "cf-and-ansible-workshops"
+     dns_zone: workshop.example.com
+     disk_size: 10
+
+  tasks:
+  - name: Create an Instance based on image "{{image}}"
+    gce:
+#      project_id: "{{project_id}}"
+#      credentials_file: "{{credentials_file}}"
+#      service_account_email: "{{service_account_email}}"
+      instance_names: "{{instance_names}}"
+      zone: "{{zone}}"
+      machine_type: "{{machine_type}}"
+      image: "{{image}}"
+      state: present
+      preemptible: true
+      disk_size: "{{disk_size}}"
+      tags: http-server,https-server,cockpit-console
+    register: gce
+
+  - name: Add disk to Instance
+    gce_pd:
+      delete_on_termination: yes
+      instance_name: "{{instance_names}}"
+      mode: READ_WRITE
+      name: vg-ocp
+      size_gb: 50
+      state: present
+      zone: "{{zone}}"
+
+  - name: Save host data within a Group
+    add_host:
+      hostname: "{{ item.public_ip }}"
+      groupname: gce_instances_temp
+    with_items: "{{ gce.instance_data }}"
+
+  - name: Wait for SSH to come up
+    wait_for: host={{ item.public_ip }} port=22 delay=10 timeout=60
+    with_items: "{{ gce.instance_data }}"
+
+  - name: setting fact
+    set_fact: host={{ item.public_ip }}
+    with_items: "{{ gce.instance_data }}"
+
+  - name: Record "{{instance_names}}" within "{{dns_zone}}"
+    gcdns_record:
+#      project_id: "{{project_id}}"
+#      credentials_file: "{{credentials_file}}"
+#      service_account_email: "{{service_account_email}}"
+      zone: "{{dns_zone}}"
+      record: "{{instance_names}}.{{dns_zone}}"
+      type: A
+      overwrite: true
+      value: "{{ host }}"
+
+- name: Configure Hosts post-creation
+  hosts: gce_instances_temp
+  gather_facts: True
+  remote_user: rcalvaga
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Install Cockpit Console
+    yum:
+      name: "{{ item }}"
+      state: latest
+    with_items:
+    - cockpit
+    - cockpit-dashboard
+
+  - name: Firewall Access Rules For Cockpit
+    command: firewall-cmd --add-port=9090/tcp
+    command: firewall-cmd --permanent --add-port=9090/tcp
+
+  - name: Start Cockpit Service
+    service:
+      name: cockpit.socket
+      state: started
+      enabled: yes
+
+  - name: install Apache
+    yum:
+      name: httpd
+      state: latest
+
+  - name: start Apache Service
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+
+  - name: create ansible user
+    user:
+      name: ansible
+      comment: "Ansible Workshop"
+      password: $1$ctRQ8kmb$PMF.2YAjQrdjiDGFuE4uw0
+      group: wheel
