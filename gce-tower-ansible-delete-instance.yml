@@ -1,0 +1,11 @@
+- name: Delete Instances in GCE
+  hosts: localhost
+  gather_facts: yes
+  connection: local
+
+  tasks:
+  - name: Deleting Instances "{{instance_names}}"
+    gce:
+      instance_names: "{{instance_names}}"
+      zone: "{{zone}}"
+      state: absent
