@@ -42,14 +42,6 @@
     set_fact: host={{ item.public_ip }}
     with_items: "{{ gce.instance_data }}"
 
-  - name: Record "{{instance_names}}" within "{{dns_zone}}"
-    gcdns_record:
-      zone: "{{dns_zone}}"
-      record: "{{instance_names}}.{{dns_zone}}"
-      type: A
-      overwrite: true
-      value: "{{ host }}"
-
 - name: Configure Hosts post-creation
   hosts: gce_instances_temp
   gather_facts: True
