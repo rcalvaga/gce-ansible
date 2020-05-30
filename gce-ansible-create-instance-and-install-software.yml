@@ -9,11 +9,7 @@
      zone: us-central1-a
      instance_names: ansible-workshop-instance
      machine_type: g1-small
-#     image: centos-7-v20170523
      image: rhel-7
-#     service_account_email: "cf-and-ansible-workshops@cf-and-ansible-workshops.iam.gserviceaccount.com"
-#     credentials_file: "/home/rcalvaga/Red_Hat_Job/SMEs/GoogleCE/CF-And-Ansible-Workshops-0d270c5e0b1a.json"
-#     project_id: "cf-and-ansible-workshops"
      dns_zone: workshop.example.com
      disk_size: 10
 
