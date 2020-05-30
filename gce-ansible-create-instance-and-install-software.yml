@@ -16,9 +16,6 @@
   tasks:
   - name: Create an Instance based on image "{{image}}"
     gce:
-#      project_id: "{{project_id}}"
-#      credentials_file: "{{credentials_file}}"
-#      service_account_email: "{{service_account_email}}"
       instance_names: "{{instance_names}}"
       zone: "{{zone}}"
       machine_type: "{{machine_type}}"
@@ -55,9 +52,6 @@
 
   - name: Record "{{instance_names}}" within "{{dns_zone}}"
     gcdns_record:
-#      project_id: "{{project_id}}"
-#      credentials_file: "{{credentials_file}}"
-#      service_account_email: "{{service_account_email}}"
       zone: "{{dns_zone}}"
       record: "{{instance_names}}.{{dns_zone}}"
       type: A
