@@ -1,7 +1,6 @@
 ---
 - name: "Configure host"
   hosts: all
-  connection: local
   become: yes
   tasks:
 
