@@ -4,8 +4,8 @@
   connection: local
 
   tasks:
-  - name: Deleting Instances "{{instance_names}}"
+  - name: Deleting Instances "{{ instance_name }}"
     gce:
-      instance_names: "{{instance_names}}"
+      instance_names: "{{ instance_name }}"
       zone: "{{zone}}"
       state: absent
