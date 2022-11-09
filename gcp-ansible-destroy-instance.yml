@@ -1,0 +1,39 @@
+---
+- name: Destroy GCP VM instance and it's resources
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Destroy a VM instance
+      google.cloud.gcp_compute_instance:
+        name: rhel-9-vm
+        labels:
+          environment: production
+        zone: "{{ gcp_zone }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        state: absent
+
+    - name: Destroy an IPv4 public IP address
+      google.cloud.gcp_compute_address:
+        name: ipaddress-instance
+        region: "{{ gcp_region }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        state: absent
+
+    - name: Destroy a Google Virtual Private Cloud (VPC) network
+      google.cloud.gcp_compute_network:
+        name: network-instance
+        auto_create_subnetworks: 'true'
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        state: absent
+
+    - name: Destroy a disk mapped from a rhel-9-vm image
+      google.cloud.gcp_compute_disk:
+        name: disk-instance
+        zone: "{{ gcp_zone }}"
+        project: "{{ gcp_project }}"
+        auth_kind: serviceaccount
+        state: absent
